@@ -36,6 +36,11 @@ struct ContentView: View {
             .navigationTitle(rootWord)
             .onSubmit(addNewWord)
             .onAppear(perform: startGame)
+            .alert(errorTitle, isPresented: $showingError) {
+                Button("Ok", role: .cancel) { }
+            } message: {
+                Text(errorMessage)
+            }
         }
     }
     
@@ -44,6 +49,21 @@ struct ContentView: View {
         guard answer.count > 0 else { return }
         
         //MARK: Extra validation to come
+        
+        guard isOriginal(word: answer) else {
+            wordError(title: "Word used already", message: "Be more original")
+            return
+        }
+        
+        guard isPosible(word: answer) else {
+            wordError(title: "Word is not posoble", message: "You can't spell that word from \(rootWord)")
+            return
+        }
+        
+        guard isReal(word: answer) else {
+            wordError(title: "Word not recognized", message: "You can't just make them up, you know")
+            return
+        }
         
         withAnimation {
             usedWords.insert(answer, at: 0)
