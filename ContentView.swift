@@ -34,12 +34,17 @@ struct ContentView: View {
                 }
             }
             .navigationTitle(rootWord)
+            
             .onSubmit(addNewWord)
             .onAppear(perform: startGame)
             .alert(errorTitle, isPresented: $showingError) {
                 Button("Ok", role: .cancel) { }
             } message: {
                 Text(errorMessage)
+            }
+            //MARK: Challenge 2. - Add a toolbar button that calls startGame(), so users can restart with a new word whenever they want to.
+            .toolbar {
+                Button("New Game", action: startGame)
             }
         }
     }
@@ -113,6 +118,20 @@ struct ContentView: View {
         errorMessage = message
         showingError = true
     }
+    //MARK: Challenge 1. - Disallow answers that are shorter than three letters or are just our start word.
+    func threeLetters() {
+        let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        guard answer.count > 0 else { return }
+        
+        guard answer.count >= 3 && answer != rootWord else {
+            wordError(title: "Invalid word", message: "Please enter a word that is at least three letters long. ")
+            return
+        }
+        withAnimation {
+            usedWords.insert(answer, at: 0)
+        }
+        newWord = ""
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
@@ -120,3 +139,5 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
+
