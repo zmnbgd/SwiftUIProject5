@@ -17,34 +17,41 @@ struct ContentView: View {
     @State private var errorMessage = ""
     @State private var showingError = false
     
+    @State private var score = 0
+    
     var body: some View {
         NavigationView {
-            List {
-                Section {
-                    TextField("Enter your word", text: $newWord)
-                        .autocapitalization(.none)
-                }
-                Section {
-                    ForEach(usedWords, id: \.self) { word in
-                        HStack {
-                            Image(systemName: "\(word.count).circle")
-                            Text(word)
+            VStack {
+                Text("Score \(score)")
+                    .font(.headline)
+                    .padding()
+                List {
+                    Section {
+                        TextField("Enter your word", text: $newWord)
+                            .autocapitalization(.none)
+                    }
+                    Section {
+                        ForEach(usedWords, id: \.self) { word in
+                            HStack {
+                                Image(systemName: "\(word.count).circle")
+                                Text(word)
+                            }
                         }
                     }
                 }
-            }
-            .navigationTitle(rootWord)
-            
-            .onSubmit(addNewWord)
-            .onAppear(perform: startGame)
-            .alert(errorTitle, isPresented: $showingError) {
-                Button("Ok", role: .cancel) { }
-            } message: {
-                Text(errorMessage)
-            }
-            //MARK: Challenge 2. - Add a toolbar button that calls startGame(), so users can restart with a new word whenever they want to.
-            .toolbar {
-                Button("New Game", action: startGame)
+                .navigationTitle(rootWord)
+                
+                .onSubmit(addNewWord)
+                .onAppear(perform: startGame)
+                .alert(errorTitle, isPresented: $showingError) {
+                    Button("Ok", role: .cancel) { }
+                } message: {
+                    Text(errorMessage)
+                }
+                //MARK: Challenge 2. - Add a toolbar button that calls startGame(), so users can restart with a new word whenever they want to.
+                .toolbar {
+                    Button("New Game", action: startGame)
+                }
             }
         }
     }
@@ -69,6 +76,8 @@ struct ContentView: View {
             wordError(title: "Word not recognized", message: "You can't just make them up, you know")
             return
         }
+        
+        score += answer.count
         
         withAnimation {
             usedWords.insert(answer, at: 0)
